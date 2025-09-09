@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface Image {
   id: number;
@@ -70,88 +69,76 @@ function Lightbox({ image, images, currentIndex, onClose, onPrevious, onNext }: 
   }, [onClose, onPrevious, onNext]);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="lightbox-backdrop z-50"
-        onClick={onClose}
-      >
-        <div className="relative w-full h-full flex items-center justify-center p-4">
-          {/* Close Button */}
+    <div className="lightbox-backdrop z-50" onClick={onClose}>
+      <div className="relative w-full h-full flex items-center justify-center p-4">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-60 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Navigation Buttons */}
+        {currentIndex > 0 && (
           <button
-            onClick={onClose}
-            className="absolute top-4 right-4 z-60 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"
+            onClick={(e) => { e.stopPropagation(); onPrevious(); }}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
+        )}
 
-          {/* Navigation Buttons */}
-          {currentIndex > 0 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onPrevious(); }}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-          )}
+        {currentIndex < images.length - 1 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onNext(); }}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
 
-          {currentIndex < images.length - 1 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onNext(); }}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70 transition-all"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          )}
+        {/* Image */}
+        <img
+          src={image.url}
+          alt={image.title}
+          className="lightbox-image"
+          onClick={(e) => e.stopPropagation()}
+        />
 
-          {/* Image */}
-          <motion.img
-            key={image.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            src={image.url}
-            alt={image.alt_text || image.title}
-            className="lightbox-image"
-            onClick={(e) => e.stopPropagation()}
-          />
-
-          {/* Image Info */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
-            <div className="text-white">
-              <h3 className="text-xl font-semibold mb-2">{image.title}</h3>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <img
-                      src={image.user.avatar_url}
-                      alt={image.user.name}
-                      className="w-8 h-8 rounded-full"
-                    />
-                    <span className="text-sm">{image.user.name}</span>
-                  </div>
-                  <div className="flex items-center space-x-4 text-sm">
-                    <span>{image.view_count} views</span>
-                    <span>{image.like_count} likes</span>
-                  </div>
+        {/* Image Info */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6">
+          <div className="text-white">
+            <h3 className="text-xl font-semibold mb-2">{image.title}</h3>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <img
+                    src={image.user.avatar_url}
+                    alt={image.user.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <span className="text-sm">{image.user.name}</span>
                 </div>
-                <div className="text-sm">
-                  {currentIndex + 1} of {images.length}
+                <div className="flex items-center space-x-4 text-sm">
+                  <span>{image.view_count} views</span>
+                  <span>{image.like_count} likes</span>
                 </div>
+              </div>
+              <div className="text-sm">
+                {currentIndex + 1} of {images.length}
               </div>
             </div>
           </div>
         </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }
 
@@ -183,12 +170,7 @@ function ImageCard({ image, onClick }: { image: Image; onClick: () => void }) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="image-grid-item cursor-pointer group"
-      onClick={onClick}
-    >
+    <div className="image-grid-item cursor-pointer group" onClick={onClick}>
       {/* Image */}
       <div className="relative overflow-hidden bg-gray-200" style={{ aspectRatio: image.aspect_ratio }}>
         {!imageLoaded && (
@@ -246,7 +228,7 @@ function ImageCard({ image, onClick }: { image: Image; onClick: () => void }) {
                     }`}
                   >
                     <svg className="w-4 h-4" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                     </svg>
                     <span>{likeCount}</span>
                   </button>
@@ -256,7 +238,7 @@ function ImageCard({ image, onClick }: { image: Image; onClick: () => void }) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -318,7 +300,7 @@ export default function ImageGallery({ images, loading = false, onLoadMore, hasM
   }
 
   return (
-    <>
+    <div>
       <div className="gallery-grid">
         {images.map((image) => (
           <ImageCard
@@ -359,6 +341,6 @@ export default function ImageGallery({ images, loading = false, onLoadMore, hasM
           onNext={nextImage}
         />
       )}
-    </>
+    </div>
   );
 }

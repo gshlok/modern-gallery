@@ -74,7 +74,7 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]')?.getAttribute('content') || '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
                 body: JSON.stringify(formData),
             });
@@ -121,57 +121,58 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
     };
 
     return (
-        <div className=\"max-w-6xl mx-auto p-6\">
-            <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-8\">
-                {/* Generation Form */}\n                <div className=\"bg-white rounded-lg shadow-lg p-6\">
-                    <h2 className=\"text-2xl font-bold mb-6 text-gray-800\">AI Image Generation</h2>
+        <div className="max-w-6xl mx-auto p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Generation Form */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <h2 className="text-2xl font-bold mb-6 text-gray-800">AI Image Generation</h2>
                     
                     {error && (
-                        <div className=\"mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700\">
+                        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                             {error}
                         </div>
                     )}
 
                     {success && (
-                        <div className=\"mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700\">
+                        <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
                             {success}
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit} className=\"space-y-6\">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Prompt */}
                         <div>
-                            <label className=\"block text-sm font-medium text-gray-700 mb-2\">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Prompt *
                             </label>
                             <textarea
                                 value={formData.prompt}
                                 onChange={(e) => handleInputChange('prompt', e.target.value)}
-                                className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 rows={3}
-                                placeholder=\"Describe the image you want to generate...\"
+                                placeholder="Describe the image you want to generate..."
                                 required
                             />
                         </div>
 
                         {/* Negative Prompt */}
                         <div>
-                            <label className=\"block text-sm font-medium text-gray-700 mb-2\">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Negative Prompt
                             </label>
                             <textarea
                                 value={formData.negativePrompt}
                                 onChange={(e) => handleInputChange('negativePrompt', e.target.value)}
-                                className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 rows={2}
-                                placeholder=\"What you don't want in the image...\"
+                                placeholder="What you don't want in the image..."
                             />
                         </div>
 
-                        <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Provider */}
                             <div>
-                                <label className=\"block text-sm font-medium text-gray-700 mb-2\">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Provider
                                 </label>
                                 <select
@@ -180,7 +181,7 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
                                         handleInputChange('provider', e.target.value);
                                         handleInputChange('model', providerModels[e.target.value as keyof typeof providerModels]?.[0] || '');
                                     }}
-                                    className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
                                     {providers.map(provider => (
                                         <option key={provider} value={provider}>
@@ -192,13 +193,13 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
 
                             {/* Model */}
                             <div>
-                                <label className=\"block text-sm font-medium text-gray-700 mb-2\">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Model
                                 </label>
                                 <select
                                     value={formData.model}
                                     onChange={(e) => handleInputChange('model', e.target.value)}
-                                    className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
                                     {(providerModels[formData.provider as keyof typeof providerModels] || []).map(model => (
                                         <option key={model} value={model}>
@@ -209,11 +210,11 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
                             </div>
                         </div>
 
-                        <div className=\"grid grid-cols-1 md:grid-cols-2 gap-4\">
-                            {/* Dimensions */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Size */}
                             <div>
-                                <label className=\"block text-sm font-medium text-gray-700 mb-2\">
-                                    Dimensions
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Size
                                 </label>
                                 <select
                                     value={`${formData.width}x${formData.height}`}
@@ -222,93 +223,91 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
                                         handleInputChange('width', width);
                                         handleInputChange('height', height);
                                     }}
-                                    className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
-                                    <option value=\"512x512\">512x512</option>
-                                    <option value=\"768x768\">768x768</option>
-                                    <option value=\"1024x1024\">1024x1024</option>
-                                    <option value=\"1024x768\">1024x768</option>
-                                    <option value=\"768x1024\">768x1024</option>
+                                    <option value="512x512">512x512</option>
+                                    <option value="768x768">768x768</option>
+                                    <option value="1024x1024">1024x1024</option>
+                                    <option value="1024x768">1024x768</option>
+                                    <option value="768x1024">768x1024</option>
                                 </select>
                             </div>
 
-                            {/* Visibility */}
+                            {/* Steps */}
                             <div>
-                                <label className=\"block text-sm font-medium text-gray-700 mb-2\">
-                                    Visibility
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Steps: {formData.steps}
                                 </label>
-                                <select
-                                    value={formData.visibility}
-                                    onChange={(e) => handleInputChange('visibility', e.target.value)}
-                                    className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
-                                >
-                                    <option value=\"public\">Public</option>
-                                    <option value=\"unlisted\">Unlisted</option>
-                                    <option value=\"private\">Private</option>
-                                </select>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="50"
+                                    value={formData.steps}
+                                    onChange={(e) => handleInputChange('steps', parseInt(e.target.value))}
+                                    className="w-full"
+                                />
                             </div>
                         </div>
 
-                        {/* Advanced Settings */}
-                        <details className=\"border rounded-lg p-4\">
-                            <summary className=\"cursor-pointer font-medium text-gray-700\">
-                                Advanced Settings
-                            </summary>
-                            <div className=\"mt-4 grid grid-cols-1 md:grid-cols-3 gap-4\">
-                                <div>
-                                    <label className=\"block text-sm font-medium text-gray-700 mb-2\">
-                                        Steps ({formData.steps})
-                                    </label>
-                                    <input
-                                        type=\"range\"
-                                        min=\"10\"
-                                        max=\"50\"
-                                        value={formData.steps}
-                                        onChange={(e) => handleInputChange('steps', parseInt(e.target.value))}
-                                        className=\"w-full\"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className=\"block text-sm font-medium text-gray-700 mb-2\">
-                                        Guidance ({formData.guidance})
-                                    </label>
-                                    <input
-                                        type=\"range\"
-                                        min=\"1\"
-                                        max=\"20\"
-                                        step=\"0.5\"
-                                        value={formData.guidance}
-                                        onChange={(e) => handleInputChange('guidance', parseFloat(e.target.value))}
-                                        className=\"w-full\"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className=\"block text-sm font-medium text-gray-700 mb-2\">
-                                        Seed (optional)
-                                    </label>
-                                    <input
-                                        type=\"number\"
-                                        value={formData.seed || ''}
-                                        onChange={(e) => handleInputChange('seed', e.target.value ? parseInt(e.target.value) : null)}
-                                        className=\"w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
-                                        placeholder=\"Random\"
-                                    />
-                                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Guidance Scale */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Guidance: {formData.guidance}
+                                </label>
+                                <input
+                                    type="range"
+                                    min="1"
+                                    max="20"
+                                    step="0.5"
+                                    value={formData.guidance}
+                                    onChange={(e) => handleInputChange('guidance', parseFloat(e.target.value))}
+                                    className="w-full"
+                                />
                             </div>
-                        </details>
 
+                            {/* Seed */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Seed (optional)
+                                </label>
+                                <input
+                                    type="number"
+                                    value={formData.seed || ''}
+                                    onChange={(e) => handleInputChange('seed', e.target.value ? parseInt(e.target.value) : null)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="Random"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Visibility */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Visibility
+                            </label>
+                            <select
+                                value={formData.visibility}
+                                onChange={(e) => handleInputChange('visibility', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value="public">Public</option>
+                                <option value="unlisted">Unlisted</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+
+                        {/* Submit Button */}
                         <button
-                            type=\"submit\"
+                            type="submit"
                             disabled={isGenerating || !formData.prompt.trim()}
-                            className=\"w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors\"
+                            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             {isGenerating ? (
-                                <span className=\"flex items-center justify-center\">
-                                    <svg className=\"animate-spin -ml-1 mr-3 h-5 w-5 text-white\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\">
-                                        <circle className=\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" strokeWidth=\"4\"></circle>
-                                        <path className=\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\"></path>
+                                <span className="flex items-center justify-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                     Generating...
                                 </span>
@@ -319,51 +318,45 @@ const AiGeneration: React.FC<AiGenerationProps> = ({ user, providers = [] }) => 
                     </form>
                 </div>
 
-                {/* Generations List */}
-                <div className=\"bg-white rounded-lg shadow-lg p-6\">
-                    <h3 className=\"text-xl font-bold mb-4 text-gray-800\">Your Generations</h3>
+                {/* Generations History */}
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">Your Generations</h3>
                     
                     {generations.length === 0 ? (
-                        <p className=\"text-gray-500 text-center py-8\">
-                            No generations yet. Create your first AI image!
-                        </p>
+                        <div className="text-center py-8 text-gray-500">
+                            <p>No generations yet. Create your first AI image!</p>
+                        </div>
                     ) : (
-                        <div className=\"space-y-4 max-h-96 overflow-y-auto\">
+                        <div className="space-y-4 max-h-96 overflow-y-auto">
                             {generations.map((generation: any) => (
-                                <div
-                                    key={generation.id}
-                                    className=\"border rounded-lg p-4 hover:bg-gray-50 transition-colors\"
-                                >
-                                    <div className=\"flex items-start justify-between\">
-                                        <div className=\"flex-1\">
-                                            <div className=\"flex items-center gap-2 mb-2\">
-                                                <span className={`text-sm font-medium ${getStatusColor(generation.status)}`}>
-                                                    {getStatusIcon(generation.status)} {generation.status}
-                                                </span>
-                                                <span className=\"text-xs text-gray-500\">
-                                                    {generation.provider} / {generation.model}
-                                                </span>
-                                            </div>
-                                            <p className=\"text-sm text-gray-700 mb-2\">
+                                <div key={generation.id} className="border border-gray-200 rounded-lg p-4">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="flex-1">
+                                            <p className="font-medium text-sm text-gray-900 truncate">
                                                 {generation.prompt}
                                             </p>
-                                            <p className=\"text-xs text-gray-500\">
-                                                {new Date(generation.created_at).toLocaleString()}
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {generation.provider} • {generation.model}
                                             </p>
                                         </div>
-                                        
-                                        {generation.image && (
-                                            <img
-                                                src={generation.image.thumbnail_url}
-                                                alt={generation.prompt}
-                                                className=\"w-16 h-16 object-cover rounded-lg ml-4\"
-                                            />
-                                        )}
+                                        <span className={`text-sm font-medium ${getStatusColor(generation.status)}`}>
+                                            {getStatusIcon(generation.status)} {generation.status}
+                                        </span>
                                     </div>
                                     
-                                    {generation.status === 'failed' && generation.error_message && (
-                                        <div className=\"mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700\">
-                                            {generation.error_message}
+                                    {generation.image && (
+                                        <div className="mt-3">
+                                            <img
+                                                src={generation.image.url}
+                                                alt={generation.prompt}
+                                                className="w-full h-32 object-cover rounded"
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    {generation.error_message && (
+                                        <div className="mt-2 text-xs text-red-600">
+                                            Error: {generation.error_message}
                                         </div>
                                     )}
                                 </div>

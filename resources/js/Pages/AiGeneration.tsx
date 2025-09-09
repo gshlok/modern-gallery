@@ -11,9 +11,9 @@ interface PageProps {
 const AiGenerationPage: React.FC<PageProps> = ({ user, providers }) => {
     return (
         <AppLayout>
-            <Head title=\"AI Image Generation\" />
+            <Head title="AI Image Generation" />
             
-            <div className=\"min-h-screen bg-gray-50\">
+            <div className="min-h-screen bg-gray-50">
                 <AiGeneration user={user} providers={providers} />
             </div>
         </AppLayout>

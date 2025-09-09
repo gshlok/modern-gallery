@@ -7,6 +7,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\AlbumController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AiGenerationPageController;
 use App\Http\Controllers\VectorSearchPageController;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,9 @@ use Inertia\Inertia;
 */
 
 // Public routes
+Route::get('/test', function () {
+    return response('Laravel is working! ' . now());
+})->middleware([]);
 Route::get('/', [GalleryController::class, 'index'])->name('home');
 Route::get('/gallery', [GalleryController::class, 'gallery'])->name('gallery');
 Route::get('/albums', [AlbumController::class, 'index'])->name('albums.index');

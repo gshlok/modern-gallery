@@ -363,6 +363,7 @@ $theme = Theme::create([
 We've provided automated testing scripts to validate your setup:
 
 **Linux/macOS:**
+
 ```bash
 # Make script executable
 chmod +x test-platform.sh
@@ -372,12 +373,14 @@ chmod +x test-platform.sh
 ```
 
 **Windows:**
+
 ```batch
 # Run the test suite
 test-platform.bat
 ```
 
 This script will:
+
 - ✅ Check Docker environment
 - ✅ Verify all containers are running
 - ✅ Test application health endpoints
@@ -389,12 +392,14 @@ This script will:
 ### Docker Environment Testing
 
 1. **Start the application**:
+
    ```bash
    cd gallery
    docker-compose up -d
    ```
 
 2. **Run the setup commands**:
+
    ```bash
    # Install dependencies and set up the application
    docker-compose exec app composer install
@@ -413,11 +418,13 @@ This script will:
 ### Manual Testing Scenarios
 
 #### 1. Authentication & User Management
+
 - **Login/Logout**: Test with different user roles
 - **Registration**: Create new user accounts
 - **Profile Management**: Update user profiles and avatars
 
 #### 2. Image Upload & Management
+
 - **Single Upload**: Upload individual images via web interface
 - **Batch Upload**: Test drag-and-drop multiple image upload
 - **Privacy Settings**: Test public, unlisted, and private visibility
@@ -425,23 +432,27 @@ This script will:
 - **EXIF Data**: Upload images with camera metadata
 
 #### 3. Gallery & Albums
+
 - **Gallery View**: Browse the responsive image gallery
 - **Album Creation**: Create and organize albums
 - **Album Management**: Add/remove images from albums
 - **Lightbox**: Test full-screen image viewing with navigation
 
 #### 4. Search & Filtering
+
 - **Text Search**: Search by title, description, and tags
 - **Filter Options**: Filter by album, user, date range
 - **Advanced Search**: Test search suggestions and autocomplete
 
 #### 5. Comments & Interactions
+
 - **Commenting**: Add comments to images
 - **Comment Replies**: Test threaded comment discussions
 - **Likes**: Like/unlike images and comments
 - **Moderation**: Test comment approval/rejection (as admin)
 
 #### 6. AI Features (Placeholder Testing)
+
 - **AI Generation**: Visit /ai-generation page
 - **Mock Generation**: Test the AI generation interface with mock provider
 - **Vector Search**: Visit /vector-search page
@@ -452,6 +463,7 @@ This script will:
 #### Using curl or Postman
 
 1. **Get authentication token**:
+
    ```bash
    curl -X POST http://localhost:8000/api/login \
      -H "Content-Type: application/json" \
@@ -459,6 +471,7 @@ This script will:
    ```
 
 2. **Test image upload**:
+
    ```bash
    curl -X POST http://localhost:8000/api/v1/images \
      -H "Authorization: Bearer YOUR_TOKEN" \
@@ -468,6 +481,7 @@ This script will:
    ```
 
 3. **Test search API**:
+
    ```bash
    curl "http://localhost:8000/api/v1/search?q=nature&limit=10"
    ```
@@ -538,6 +552,7 @@ docker-compose logs -f db
 ### Production-like Testing
 
 1. **Enable production mode**:
+
    ```bash
    # Set in docker-compose.yml environment
    APP_ENV=production
@@ -545,6 +560,7 @@ docker-compose logs -f db
    ```
 
 2. **Test with optimized assets**:
+
    ```bash
    docker-compose exec app php artisan config:cache
    docker-compose exec app php artisan route:cache
@@ -651,6 +667,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### 🚀 Getting Started in 5 Minutes
 
 1. **Clone and setup**:
+
    ```bash
    git clone https://github.com/yourusername/gallery.git
    cd gallery
@@ -659,6 +676,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
    ```
 
 2. **Initialize the application**:
+
    ```bash
    docker-compose exec app composer install
    docker-compose exec app php artisan key:generate
@@ -676,14 +694,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 🔧 Common Issues & Solutions
 
-| Issue | Solution |
-|-------|----------|
-| Port 8000 already in use | Change port in `docker-compose.yml` (ports: "8001:80") |
-| Permission denied errors | Run `sudo chown -R $USER:$USER storage` |
-| Database connection fails | Wait 30s for PostgreSQL to start, then retry |
-| npm build fails | Delete `node_modules`, run `npm install` again |
-| Images not displaying | Run `php artisan storage:link` |
-| Queue jobs not processing | Check if queue container is running |
+| Issue                     | Solution                                               |
+| ------------------------- | ------------------------------------------------------ |
+| Port 8000 already in use  | Change port in `docker-compose.yml` (ports: "8001:80") |
+| Permission denied errors  | Run `sudo chown -R $USER:$USER storage`                |
+| Database connection fails | Wait 30s for PostgreSQL to start, then retry           |
+| npm build fails           | Delete `node_modules`, run `npm install` again         |
+| Images not displaying     | Run `php artisan storage:link`                         |
+| Queue jobs not processing | Check if queue container is running                    |
 
 ### 📚 Documentation
 

@@ -66,7 +66,7 @@ const VectorSearch: React.FC<VectorSearchProps> = ({ user }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]')?.getAttribute('content') || '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
                 body: JSON.stringify({
                     query: searchQuery,
@@ -120,7 +120,7 @@ const VectorSearch: React.FC<VectorSearchProps> = ({ user }) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]')?.getAttribute('content') || '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
                 },
             });
 
@@ -152,56 +152,56 @@ const VectorSearch: React.FC<VectorSearchProps> = ({ user }) => {
     };
 
     return (
-        <div className=\"max-w-7xl mx-auto p-6\">
+        <div className="max-w-7xl mx-auto p-6">
             {/* Header */}
-            <div className=\"mb-8\">
-                <h1 className=\"text-3xl font-bold text-gray-900 mb-2\">Vector Search</h1>
-                <p className=\"text-gray-600\">Search for images using AI-powered semantic similarity</p>
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Vector Search</h1>
+                <p className="text-gray-600">Search for images using AI-powered semantic similarity</p>
             </div>
 
             {error && (
-                <div className=\"mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700\">
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
                     {error}
                 </div>
             )}
 
             {/* Search Form */}
-            <div className=\"bg-white rounded-lg shadow-lg p-6 mb-8\">
-                <form onSubmit={handleSemanticSearch} className=\"space-y-4\">
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <form onSubmit={handleSemanticSearch} className="space-y-4">
                     <div>
-                        <label className=\"block text-sm font-medium text-gray-700 mb-2\">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
                             Semantic Search Query
                         </label>
-                        <div className=\"flex gap-4\">
+                        <div className="flex gap-4">
                             <input
-                                type=\"text\"
+                                type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className=\"flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent\"
-                                placeholder=\"e.g., 'sunset over mountains', 'person wearing red dress', 'vintage car'\"
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="e.g., 'sunset over mountains', 'person wearing red dress', 'vintage car'"
                             />
                             <button
-                                type=\"submit\"
+                                type="submit"
                                 disabled={isSearching || !searchQuery.trim()}
-                                className=\"bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors\"
+                                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                             >
                                 {isSearching ? 'Searching...' : 'Search'}
                             </button>
                         </div>
                     </div>
 
-                    <div className=\"flex items-center gap-4\">
-                        <label className=\"text-sm font-medium text-gray-700\">
+                    <div className="flex items-center gap-4">
+                        <label className="text-sm font-medium text-gray-700">
                             Similarity Threshold: {searchThreshold}
                         </label>
                         <input
-                            type=\"range\"
-                            min=\"0.5\"
-                            max=\"1\"
-                            step=\"0.05\"
+                            type="range"
+                            min="0.5"
+                            max="1"
+                            step="0.1"
                             value={searchThreshold}
                             onChange={(e) => setSearchThreshold(parseFloat(e.target.value))}
-                            className=\"flex-1 max-w-xs\"
+                            className="flex-1 max-w-xs"
                         />
                     </div>
                 </form>
@@ -209,135 +209,135 @@ const VectorSearch: React.FC<VectorSearchProps> = ({ user }) => {
 
             {/* Embedding Status */}
             {embeddingStatus && (
-                <div className=\"bg-white rounded-lg shadow-lg p-6 mb-8\">
-                    <h3 className=\"text-lg font-semibold text-gray-800 mb-4\">Embedding Status</h3>
-                    <div className=\"grid grid-cols-1 md:grid-cols-3 gap-4 text-center\">
-                        <div className=\"p-4 bg-blue-50 rounded-lg\">
-                            <div className=\"text-2xl font-bold text-blue-600\">{embeddingStatus.total_images}</div>
-                            <div className=\"text-sm text-gray-600\">Total Images</div>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+                    <h3 className="text-lg font-medium text-blue-900 mb-2">Embedding Status</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                            <span className="font-medium">Total Images:</span> {embeddingStatus.total_images || 0}
                         </div>
-                        <div className=\"p-4 bg-green-50 rounded-lg\">
-                            <div className=\"text-2xl font-bold text-green-600\">{embeddingStatus.with_embeddings}</div>
-                            <div className=\"text-sm text-gray-600\">With Embeddings</div>
+                        <div>
+                            <span className="font-medium">With Embeddings:</span> {embeddingStatus.images_with_embeddings || 0}
                         </div>
-                        <div className=\"p-4 bg-yellow-50 rounded-lg\">
-                            <div className=\"text-2xl font-bold text-yellow-600\">{embeddingStatus.without_embeddings}</div>
-                            <div className=\"text-sm text-gray-600\">Need Embeddings</div>
+                        <div>
+                            <span className="font-medium">Coverage:</span> {embeddingStatus.coverage_percentage || 0}%
+                        </div>
+                        <div>
+                            <span className="font-medium">Last Updated:</span> {embeddingStatus.last_updated || 'Never'}
                         </div>
                     </div>
                 </div>
             )}
 
-            <div className=\"grid grid-cols-1 lg:grid-cols-2 gap-8\">
-                {/* Search Results */}
-                <div className=\"bg-white rounded-lg shadow-lg p-6\">
-                    <h3 className=\"text-xl font-bold mb-4 text-gray-800\">Search Results</h3>
-                    
-                    {searchResults.length === 0 ? (
-                        <p className=\"text-gray-500 text-center py-8\">
-                            {isSearching ? 'Searching...' : 'Enter a search query to find similar images'}
-                        </p>
-                    ) : (
-                        <div className=\"space-y-4 max-h-96 overflow-y-auto\">
-                            {searchResults.map((result) => (
-                                <div
-                                    key={result.id}
-                                    className=\"flex items-center gap-4 p-3 border rounded-lg hover:bg-gray-50 transition-colors\"
-                                >
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">
+                        Search Results ({searchResults.length})
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {searchResults.map((result) => (
+                            <div key={result.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                                <div className="aspect-square">
                                     <img
                                         src={result.thumbnail_url}
                                         alt={result.title}
-                                        className=\"w-16 h-16 object-cover rounded-lg\"
+                                        className="w-full h-full object-cover"
                                     />
-                                    <div className=\"flex-1\">
-                                        <h4 className=\"font-medium text-gray-900\">{result.title}</h4>
-                                        <p className=\"text-sm text-gray-600 line-clamp-2\">{result.description}</p>
-                                        <div className=\"flex items-center gap-4 mt-1\">
-                                            <span className={`text-sm font-medium ${getSimilarityColor(result.similarity_score)}`}>
-                                                {getSimilarityLabel(result.similarity_score)} ({(result.similarity_score * 100).toFixed(1)}%)
-                                            </span>
-                                            <span className=\"text-xs text-gray-500\">by {result.user.name}</span>
-                                        </div>
+                                </div>
+                                <div className="p-4">
+                                    <h4 className="font-medium text-gray-900 truncate mb-1">
+                                        {result.title}
+                                    </h4>
+                                    <p className="text-sm text-gray-600 truncate mb-2">
+                                        by {result.user.name}
+                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <span className={`text-sm font-medium ${getSimilarityColor(result.similarity_score)}`}>
+                                            {getSimilarityLabel(result.similarity_score)}
+                                        </span>
+                                        <span className="text-xs text-gray-500">
+                                            {Math.round(result.similarity_score * 100)}%
+                                        </span>
                                     </div>
                                     <button
                                         onClick={() => handleFindSimilar(result.id, result.url.split('/').pop() || '')}
-                                        className=\"bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors\"
-                                        disabled={isFindingSimilar}
+                                        className="mt-2 w-full text-sm bg-gray-100 text-gray-700 py-1 px-2 rounded hover:bg-gray-200 transition-colors"
                                     >
                                         Find Similar
                                     </button>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
+            )}
 
-                {/* Similar Images */}
-                <div className=\"bg-white rounded-lg shadow-lg p-6\">
-                    <h3 className=\"text-xl font-bold mb-4 text-gray-800\">Similar Images</h3>
+            {/* Similar Images */}
+            {selectedImage && similarImages.length > 0 && (
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                    <h3 className="text-xl font-bold mb-4 text-gray-800">
+                        Images Similar to "{selectedImage.title}"
+                    </h3>
                     
-                    {selectedImage && (
-                        <div className=\"mb-4 p-3 bg-blue-50 rounded-lg\">
-                            <div className=\"flex items-center gap-3\">
-                                <img
-                                    src={selectedImage.thumbnail_url}
-                                    alt={selectedImage.title}
-                                    className=\"w-12 h-12 object-cover rounded-lg\"
-                                />
-                                <div>
-                                    <p className=\"font-medium text-blue-900\">Finding similar to:</p>
-                                    <p className=\"text-sm text-blue-700\">{selectedImage.title}</p>
-                                </div>
+                    {/* Source Image */}
+                    <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-medium text-gray-700 mb-2">Source Image:</h4>
+                        <div className="flex items-center gap-4">
+                            <img
+                                src={selectedImage.thumbnail_url}
+                                alt={selectedImage.title}
+                                className="w-20 h-20 object-cover rounded"
+                            />
+                            <div>
+                                <p className="font-medium">{selectedImage.title}</p>
+                                <p className="text-sm text-gray-600">{selectedImage.description}</p>
                             </div>
                         </div>
-                    )}
-                    
-                    {similarImages.length === 0 ? (
-                        <p className=\"text-gray-500 text-center py-8\">
-                            {isFindingSimilar ? 'Finding similar images...' : 'Click \"Find Similar\" on any image to see related images'}
-                        </p>
-                    ) : (
-                        <div className=\"space-y-4 max-h-96 overflow-y-auto\">
-                            {similarImages.map((image) => (
-                                <div
-                                    key={image.id}
-                                    className=\"flex items-center gap-4 p-3 border rounded-lg hover:bg-gray-50 transition-colors\"
-                                >
+                    </div>
+
+                    {/* Similar Images Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {similarImages.map((image) => (
+                            <div key={image.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                                <div className="aspect-square">
                                     <img
                                         src={image.thumbnail_url}
                                         alt={image.title}
-                                        className=\"w-16 h-16 object-cover rounded-lg\"
+                                        className="w-full h-full object-cover"
                                     />
-                                    <div className=\"flex-1\">
-                                        <h4 className=\"font-medium text-gray-900\">{image.title}</h4>
+                                </div>
+                                <div className="p-4">
+                                    <h4 className="font-medium text-gray-900 truncate mb-1">
+                                        {image.title}
+                                    </h4>
+                                    <div className="flex items-center justify-between">
                                         <span className={`text-sm font-medium ${getSimilarityColor(image.similarity_score)}`}>
-                                            {getSimilarityLabel(image.similarity_score)} ({(image.similarity_score * 100).toFixed(1)}%)
+                                            {getSimilarityLabel(image.similarity_score)}
+                                        </span>
+                                        <span className="text-xs text-gray-500">
+                                            {Math.round(image.similarity_score * 100)}%
                                         </span>
                                     </div>
                                     <button
                                         onClick={() => handleFindSimilar(image.id, image.url.split('/').pop() || '')}
-                                        className=\"bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors\"
-                                        disabled={isFindingSimilar}
+                                        className="mt-2 w-full text-sm bg-gray-100 text-gray-700 py-1 px-2 rounded hover:bg-gray-200 transition-colors"
                                     >
                                         Find Similar
                                     </button>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* Vector Search Info */}
-            <div className=\"mt-8 bg-gray-50 rounded-lg p-6\">
-                <h3 className=\"text-lg font-semibold text-gray-800 mb-3\">How Vector Search Works</h3>
-                <div className=\"text-sm text-gray-600 space-y-2\">
-                    <p>• <strong>Semantic Search:</strong> Find images based on meaning rather than just keywords</p>
-                    <p>• <strong>AI Embeddings:</strong> Each image is converted to a high-dimensional vector representing its visual features</p>
-                    <p>• <strong>Similarity Matching:</strong> Compare vectors to find visually or conceptually similar images</p>
-                    <p>• <strong>Threshold Control:</strong> Adjust the similarity threshold to get more or fewer results</p>
+            {/* No Results */}
+            {searchResults.length === 0 && searchQuery && !isSearching && (
+                <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+                    <p className="text-gray-500">No images found matching your search query.</p>
+                    <p className="text-sm text-gray-400 mt-1">Try adjusting your search terms or lowering the similarity threshold.</p>
                 </div>
-            </div>
+            )}
         </div>
     );
 };

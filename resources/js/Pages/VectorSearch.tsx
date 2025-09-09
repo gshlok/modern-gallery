@@ -10,9 +10,9 @@ interface PageProps {
 const VectorSearchPage: React.FC<PageProps> = ({ user }) => {
     return (
         <AppLayout>
-            <Head title=\"Vector Search\" />
+            <Head title="Vector Search" />
             
-            <div className=\"min-h-screen bg-gray-50\">
+            <div className="min-h-screen bg-gray-50">
                 <VectorSearch user={user} />
             </div>
         </AppLayout>

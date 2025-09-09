@@ -12,10 +12,14 @@ RUN apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \
     libwebp-dev \
+    libzip-dev \
     imagemagick-dev \
     imagemagick \
     nodejs \
-    npm
+    npm \
+    autoconf \
+    g++ \
+    make
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -39,20 +43,23 @@ WORKDIR /var/www/html
 # Copy application files
 COPY . .
 
-# Install dependencies
-RUN composer install --optimize-autoloader --no-dev
-RUN npm install && npm run build
+# Fix git ownership issue
+RUN git config --global --add safe.directory /var/www/html
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+# Install dependencies
+RUN composer install --optimize-autoloader --no-dev --no-scripts
+RUN npm install && npm run build
 
 # Create storage directories
 RUN mkdir -p storage/app/public/images \
     && mkdir -p storage/app/public/thumbnails \
     && mkdir -p storage/logs \
     && mkdir -p bootstrap/cache
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
