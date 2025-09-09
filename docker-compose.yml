@@ -1,0 +1,147 @@
+version: '3.8'
+
+services:
+  # Laravel Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gallery_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+    depends_on:
+      - db
+      - redis
+    networks:
+      - gallery_network
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=gallery
+      - DB_USERNAME=gallery_user
+      - DB_PASSWORD=gallery_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  # Nginx Web Server
+  nginx:
+    image: nginx:alpine
+    container_name: gallery_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - gallery_network
+
+  # PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: gallery_db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: gallery
+      POSTGRES_USER: gallery_user
+      POSTGRES_PASSWORD: gallery_password
+    volumes:
+      - gallery_db_data:/var/lib/postgresql/data
+    networks:
+      - gallery_network
+
+  # Redis Cache & Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: gallery_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - gallery_redis_data:/data
+    networks:
+      - gallery_network
+    command: redis-server --appendonly yes
+
+  # Mail Server (for development)
+  mailpit:
+    image: axllent/mailpit
+    container_name: gallery_mail
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - gallery_network
+
+  # Laravel Queue Worker
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gallery_queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+      - redis
+    networks:
+      - gallery_network
+    command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=gallery
+      - DB_USERNAME=gallery_user
+      - DB_PASSWORD=gallery_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  # Laravel Scheduler (for cron jobs)
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gallery_scheduler
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+      - redis
+    networks:
+      - gallery_network
+    command: php artisan schedule:work
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=gallery
+      - DB_USERNAME=gallery_user
+      - DB_PASSWORD=gallery_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+# Named Volumes
+volumes:
+  gallery_db_data:
+    driver: local
+  gallery_redis_data:
+    driver: local
+
+# Networks
+networks:
+  gallery_network:
+    driver: bridge
