@@ -25,7 +25,13 @@
                 <div class="p-2 bg-white">
                     <h3 class="font-semibold text-sm truncate">{{ $galleryImage->title }}</h3>
                     <p class="text-xs text-gray-500 truncate">Uploaded by {{ $galleryImage->user?->name ?? 'Unknown' }}</p>
-                    <p class="text-xs text-gray-500 truncate">Album: {{ $galleryImage->album?->name ?? 'None' }}</p>
+                    <div class="mt-1 flex flex-wrap gap-1">
+                        @forelse($galleryImage->albums as $al)
+                            <span class="text-[10px] bg-gray-100 text-gray-700 px-2 py-0.5 rounded">{{ $al->name }}</span>
+                        @empty
+                            <span class="text-[10px] text-gray-400">No Albums</span>
+                        @endforelse
+                    </div>
                 </div>
             </a>
             @endforeach

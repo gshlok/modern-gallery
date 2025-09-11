@@ -16,6 +16,9 @@
                         {{ __('Gallery') }}
                     </x-nav-link>
                     @auth
+                    <x-nav-link :href="route('albums.index')" :active="request()->routeIs('albums.*')">
+                        {{ __('My Albums') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('gallery.upload')" :active="request()->routeIs('gallery.upload')">
                         {{ __('Upload') }}
                     </x-nav-link>
@@ -83,6 +86,9 @@
                 {{ __('Gallery') }}
             </x-responsive-nav-link>
             @auth
+            <x-responsive-nav-link :href="route('albums.index')" :active="request()->routeIs('albums.*')">
+                {{ __('My Albums') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('gallery.upload')" :active="request()->routeIs('gallery.upload')">
                 {{ __('Upload') }}
             </x-responsive-nav-link>

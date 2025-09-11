@@ -13,7 +13,7 @@ class GalleryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Image::with(['user', 'album'])->latest();
+        $query = Image::with(['user', 'albums'])->where('user_id', auth()->id())->latest();
 
         if ($search = $request->input('search')) {
             $query->where('title', 'like', "%{$search}%")
@@ -21,24 +21,26 @@ class GalleryController extends Controller
         }
 
         if ($albumId = $request->input('album_id')) {
-            $query->where('album_id', $albumId);
+            $query->whereHas('albums', function ($q) use ($albumId) {
+                $q->where('albums.id', $albumId);
+            });
         }
 
         $images = $query->paginate(24);
-        $albums = Album::withCount('images')->get();
+        $albums = Album::where('user_id', auth()->id())->withCount('images')->get();
 
         return view('gallery.index', compact('images', 'albums'));
     }
 
     public function show(string $uuid)
     {
-        $image = Image::with(['user', 'album'])->where('uuid', $uuid)->firstOrFail();
+        $image = Image::with(['user', 'albums'])->where('uuid', $uuid)->firstOrFail();
         return view('gallery.show', compact('image'));
     }
 
     public function upload()
     {
-        $albums = Album::all();
+        $albums = Album::where('user_id', auth()->id())->orderBy('name')->get();
         return view('gallery.upload', compact('albums'));
     }
 
@@ -46,11 +48,21 @@ class GalleryController extends Controller
     {
         $request->validate([
             'images.*' => 'required|image|max:5120',
-            'album_id' => 'nullable|exists:albums,id',
+            'album_ids' => 'array',
+            'album_ids.*' => 'integer|exists:albums,id',
         ]);
 
+        $albumIds = collect($request->input('album_ids', []))
+            ->filter()
+            ->unique()
+            ->values();
+        if ($albumIds->isNotEmpty()) {
+            $ownedCount = Album::where('user_id', auth()->id())->whereIn('id', $albumIds)->count();
+            abort_unless($ownedCount === $albumIds->count(), 403);
+        }
+
         foreach ($request->file('images') as $file) {
-            $imageService->uploadImage($file, $request->album_id);
+            $imageService->uploadImage($file, $albumIds->all());
         }
 
         return redirect()->route('gallery.index')->with('success', 'Images uploaded successfully.');
@@ -60,10 +72,12 @@ class GalleryController extends Controller
     {
         $request->validate([
             'new_title' => 'nullable|string|max:255',
-            'album_id' => 'nullable|exists:albums,id',
+            'album_ids' => 'array',
+            'album_ids.*' => 'integer|exists:albums,id',
         ]);
 
         $image = Image::where('uuid', $uuid)->firstOrFail();
+        $this->authorize('manage', $image);
 
         $updated = false;
 
@@ -72,8 +86,13 @@ class GalleryController extends Controller
             $updated = true;
         }
 
-        if ($request->has('album_id') && $request->album_id != $image->album_id) {
-            $image->album_id = $request->album_id;
+        if ($request->has('album_ids')) {
+            $albumIds = collect($request->input('album_ids', []))->filter()->unique();
+            if ($albumIds->isNotEmpty()) {
+                $ownedCount = Album::where('user_id', auth()->id())->whereIn('id', $albumIds)->count();
+                abort_unless($ownedCount === $albumIds->count(), 403);
+            }
+            $image->albums()->sync($albumIds->all());
             $updated = true;
         }
 
@@ -87,6 +106,7 @@ class GalleryController extends Controller
     public function destroy(string $uuid)
     {
         $image = Image::where('uuid', $uuid)->firstOrFail();
+        $this->authorize('delete', $image);
 
         // Delete image and thumbnail files
         Storage::disk('public')->delete('images/' . $image->filename);

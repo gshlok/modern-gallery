@@ -20,7 +20,7 @@ class Image extends Model
         'size_bytes',
         'exif_data',
         'user_id',
-        'album_id',
+        // 'album_id' kept for legacy backfill; not used for new relations
     ];
 
     protected $casts = [
@@ -38,9 +38,9 @@ class Image extends Model
     /**
      * Image belongs to an album.
      */
-    public function album()
+    public function albums()
     {
-        return $this->belongsTo(Album::class);
+        return $this->belongsToMany(Album::class, 'album_image')->withTimestamps();
     }
 
     /**

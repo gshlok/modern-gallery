@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class ImageService
 {
-    public function uploadImage(UploadedFile $file, ?int $albumId = null): ImageModel
+    public function uploadImage(UploadedFile $file, array $albumIds = []): ImageModel
     {
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
@@ -33,7 +33,7 @@ class ImageService
             //
         }
 
-        return ImageModel::create([
+        $imageModel = ImageModel::create([
             'filename' => $filename,
             'title' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
             'mime_type' => $file->getMimeType(),
@@ -42,7 +42,13 @@ class ImageService
             'size_bytes' => $file->getSize(),
             'exif_data' => $exif,
             'user_id' => auth()->id(),
-            'album_id' => $albumId,
+            // legacy album_id unused for new many-to-many
         ]);
+
+        if (!empty($albumIds)) {
+            $imageModel->albums()->syncWithoutDetaching($albumIds);
+        }
+
+        return $imageModel;
     }
 }
