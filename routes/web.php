@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\AIController;
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AIController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [GalleryController::class, 'index'])->name('gallery.index');
@@ -29,6 +31,11 @@ Route::middleware('auth')->group(function () {
 
     // User account deletion
     Route::delete('/user/delete', [UserController::class, 'destroy'])->name('user.destroy');
+
+    // Fix for missing dashboard route
+    Route::get('/dashboard', function () {
+        return redirect()->route('gallery.index');
+    })->name('dashboard');
 });
 
 require __DIR__.'/auth.php';
