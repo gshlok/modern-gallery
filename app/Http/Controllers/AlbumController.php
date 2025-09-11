@@ -19,7 +19,7 @@ class AlbumController extends Controller
         ]);
 
         Album::create([
-            'name' => $request->input('name'),
+            'name' => $request->name,
             'user_id' => auth()->id(),
         ]);
 

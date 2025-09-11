@@ -31,13 +31,14 @@
 
                 @auth
                 <div class="mt-6 flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
-                    <form method="POST" action="{{ route('gallery.rename', $image->uuid) }}">
+                    <form method="POST" action="{{ route('gallery.rename', $image->uuid) }}" class="w-full sm:w-auto">
                         @csrf
+
                         <label for="new_title" class="block font-semibold mb-1">Rename Image</label>
-                        <input id="new_title" type="text" name="new_title" value="{{ old('new_title', $image->title) }}" required class="border rounded p-1 w-full sm:w-auto" />
+                        <input id="new_title" type="text" name="new_title" value="{{ old('new_title', $image->title) }}" required class="border rounded p-1 w-full" />
 
                         <label for="album_id" class="block font-semibold mt-3 mb-1">Move To Album</label>
-                        <select id="album_id" name="album_id" class="border rounded p-2 w-full sm:w-auto">
+                        <select id="album_id" name="album_id" class="border rounded p-2 w-full">
                             <option value="">No Album</option>
                             @foreach(App\Models\Album::all() as $album)
                                 <option value="{{ $album->id }}" {{ $album->id == $image->album_id ? 'selected' : '' }}>
@@ -46,13 +47,17 @@
                             @endforeach
                         </select>
 
-                        <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mt-3 w-full sm:w-auto">Update</button>
+                        <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded mt-3 w-full">
+                            Update
+                        </button>
                     </form>
 
-                    <form method="POST" action="{{ route('gallery.destroy', $image->uuid) }}" onsubmit="return confirm('Are you sure you want to delete this image?');" class="mt-6 sm:mt-0">
+                    <form method="POST" action="{{ route('gallery.destroy', $image->uuid) }}" onsubmit="return confirm('Are you sure you want to delete this image?');" class="mt-4 sm:mt-0 w-full sm:w-auto">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded w-full sm:w-auto">Delete</button>
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded w-full">
+                            Delete
+                        </button>
                     </form>
                 </div>
                 @endauth

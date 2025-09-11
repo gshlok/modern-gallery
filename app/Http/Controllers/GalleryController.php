@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Image as ImageModel;
+use App\Models\Image;
 use App\Models\Album;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Services\ImageService;
 
 class GalleryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ImageModel::with(['user', 'album'])->latest();
+        $query = Image::with(['user', 'album'])->latest();
 
         if ($search = $request->input('search')) {
             $query->where('title', 'like', "%{$search}%")
@@ -31,7 +32,7 @@ class GalleryController extends Controller
 
     public function show(string $uuid)
     {
-        $image = ImageModel::with(['user', 'album'])->where('uuid', $uuid)->firstOrFail();
+        $image = Image::with(['user', 'album'])->where('uuid', $uuid)->firstOrFail();
         return view('gallery.show', compact('image'));
     }
 
@@ -55,18 +56,6 @@ class GalleryController extends Controller
         return redirect()->route('gallery.index')->with('success', 'Images uploaded successfully.');
     }
 
-    public function destroy(string $uuid)
-    {
-        $image = ImageModel::where('uuid', $uuid)->firstOrFail();
-
-        Storage::disk('public')->delete('images/' . $image->filename);
-        Storage::disk('public')->delete('thumbnails/' . $image->filename);
-
-        $image->delete();
-
-        return redirect()->route('gallery.index')->with('success', 'Image deleted successfully.');
-    }
-
     public function rename(Request $request, string $uuid)
     {
         $request->validate([
@@ -74,26 +63,12 @@ class GalleryController extends Controller
             'album_id' => 'nullable|exists:albums,id',
         ]);
 
-        $image = ImageModel::where('uuid', $uuid)->firstOrFail();
+        $image = Image::where('uuid', $uuid)->firstOrFail();
+
         $updated = false;
 
-        if ($request->filled('new_title')) {
-            $oldFilename = $image->filename;
-            $extension = pathinfo($oldFilename, PATHINFO_EXTENSION);
-            $newFilenameBase = \Illuminate\Support\Str::slug($request->input('new_title'));
-            $newFilename = $newFilenameBase . '.' . $extension;
-
-            $counter = 1;
-            while (Storage::disk('public')->exists('images/' . $newFilename) ||
-                   Storage::disk('public')->exists('thumbnails/' . $newFilename)) {
-                $newFilename = $newFilenameBase . '-' . $counter++ . '.' . $extension;
-            }
-
-            Storage::disk('public')->move('images/' . $oldFilename, 'images/' . $newFilename);
-            Storage::disk('public')->move('thumbnails/' . $oldFilename, 'thumbnails/' . $newFilename);
-
-            $image->filename = $newFilename;
-            $image->title = $request->input('new_title');
+        if ($request->filled('new_title') && $request->new_title !== $image->title) {
+            $image->title = $request->new_title;
             $updated = true;
         }
 
@@ -106,10 +81,19 @@ class GalleryController extends Controller
             $image->save();
         }
 
-        if ($request->ajax()) {
-            return response()->json(['message' => 'Image updated successfully']);
-        }
-
         return redirect()->route('gallery.show', $uuid)->with('success', 'Image updated successfully.');
+    }
+
+    public function destroy(string $uuid)
+    {
+        $image = Image::where('uuid', $uuid)->firstOrFail();
+
+        // Delete image and thumbnail files
+        Storage::disk('public')->delete('images/' . $image->filename);
+        Storage::disk('public')->delete('thumbnails/' . $image->filename);
+
+        $image->delete();
+
+        return redirect()->route('gallery.index')->with('success', 'Image deleted successfully.');
     }
 }
