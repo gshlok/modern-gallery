@@ -4,87 +4,73 @@ namespace App\Services;
 
 use App\Models\AIGeneration;
 use App\Models\Image;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image as InterventionImage;
 
 class AIImageService
 {
-    public function generateImage(string $prompt, array $options = []): AIGeneration
+    /**
+     * Process the AI image generation, called by the background job.
+     */
+    public function processGeneration(AIGeneration $generation): void
     {
-        $generation = AIGeneration::create([
-            'user_id' => auth()->id(),
-            'provider' => 'huggingface',
-            'model_name' => 'stabilityai/stable-diffusion-2-1',
-            'prompt' => $prompt,
-            'parameters' => $options,
-            'status' => 'processing'
+        $apiKey = config('services.gemini.key');
+        if (!$apiKey) {
+            throw new \Exception('Gemini API key is not configured.');
+        }
+
+        // === REAL API CALL (currently using a placeholder for testing) ===
+        // To use the real API, comment out the placeholder line and uncomment/adapt the API call block.
+        /*
+        $response = Http::withToken($apiKey)
+            ->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', [
+                // Adapt this payload to your specific AI image generation model's requirements
+                'contents' => [
+                    ['parts' => [['text' => $generation->prompt]]]
+                ]
+            ]);
+
+        $response->throw(); // Throw an exception if the request failed
+        $base64Image = $response->json('...'); // Parse the correct key for the base64 image data
+        */
+
+        // For this example to be testable, we use a placeholder base64 string (a small purple square).
+        $base64Image = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==';
+
+        if (empty($base64Image)) {
+            throw new \Exception('API did not return a valid image.');
+        }
+
+        $imageData = base64_decode($base64Image);
+        $filename = 'ai_' . Str::uuid() . '.png';
+        $path = "images/{$filename}";
+        $thumbnailPath = "thumbnails/{$filename}";
+
+        // Store the main image and thumbnail
+        Storage::disk('public')->put($path, $imageData);
+        $thumbnail = InterventionImage::make($imageData)->fit(300, 300)->encode('png', 80);
+        Storage::disk('public')->put($thumbnailPath, (string) $thumbnail);
+
+        // Create the image record in the database
+        $imageRecord = Image::create([
+            'filename' => $filename,
+            'title' => 'AI: ' . Str::limit($generation->prompt, 100),
+            'caption' => "Generated from prompt: {$generation->prompt}",
+            'mime_type' => 'image/png',
+            'width' => 512, // Or get from actual image data
+            'height' => 512, // Or get from actual image data
+            'size_bytes' => Storage::disk('public')->size($path),
+            'user_id' => $generation->user_id,
+            'privacy_level' => 'public'
         ]);
 
-        try {
-            $image = $this->createPlaceholderImage($prompt);
-
-            $filename = 'ai_' . Str::uuid() . '.jpg';
-            $path = "images/{$filename}";
-
-            Storage::put('public/' . $path, $image);
-
-            $intervention = InterventionImage::make(storage_path("app/public/{$path}"));
-            $thumbnail = clone $intervention;
-            $thumbnail->fit(300, 300);
-            $thumbnail->save(storage_path("app/public/thumbnails/{$filename}"));
-
-            $imageRecord = Image::create([
-                'filename' => $filename,
-                'title' => 'AI Generated: ' . Str::limit($prompt, 50),
-                'caption' => "Generated from prompt: {$prompt}",
-                'mime_type' => 'image/jpeg',
-                'width' => $intervention->width(),
-                'height' => $intervention->height(),
-                'size_bytes' => Storage::size('public/' . $path),
-                'user_id' => auth()->id(),
-                'privacy_level' => 'public'
-            ]);
-
-            $generation->update([
-                'image_id' => $imageRecord->id,
-                'status' => 'completed'
-            ]);
-        } catch (\Exception $e) {
-            $generation->update([
-                'status' => 'failed',
-                'error_message' => $e->getMessage()
-            ]);
-        }
-
-        return $generation->refresh();
-    }
-
-    private function createPlaceholderImage(string $prompt): string
-    {
-        $image = InterventionImage::canvas(512, 512, '#667eea');
-        $image->fill('#f093fb');
-
-        $words = explode(' ', $prompt);
-        $lines = array_chunk($words, 3);
-        $y = 200;
-        foreach (array_slice($lines, 0, 5) as $line) {
-            $text = implode(' ', $line);
-            $image->text($text, 256, $y, function($font) {
-                $font->file(public_path('fonts/arial.ttf') ?: null);
-                $font->size(24);
-                $font->color('#ffffff');
-                $font->align('center');
-                $font->valign('middle');
-            });
-            $y += 40;
-        }
-        $image->text('AI Generated Demo', 256, 450, function($font) {
-            $font->size(16);
-            $font->color('#ffffff');
-            $font->align('center');
-        });
-
-        return $image->encode('jpg', 80);
+        // Link the image to the generation record and mark as completed
+        $generation->update([
+            'image_id' => $imageRecord->id,
+            'status' => 'completed',
+            'error_message' => null,
+        ]);
     }
 }

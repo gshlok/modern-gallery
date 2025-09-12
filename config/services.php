@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // === ADDED FOR AI IMAGE GENERATION ===
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+    ],
+    // ===================================
+
 ];

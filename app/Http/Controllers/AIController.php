@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\GenerateAiImage;
 use App\Models\AIGeneration;
-use App\Services\AIImageService;
 use Illuminate\Http\Request;
 
 class AIController extends Controller
 {
-    public function __construct(protected AIImageService $aiService) {}
-
     public function create()
     {
         return view('ai.create');
@@ -17,26 +15,30 @@ class AIController extends Controller
 
     public function generate(Request $request)
     {
-        $request->validate([
-            'prompt' => 'required|string|min:3|max:500',
+        $validated = $request->validate([
+            'prompt' => 'required|string|min:3|max:1000',
             'style' => 'nullable|string',
             'size' => 'nullable|in:512x512,768x768,1024x1024'
         ]);
 
-        $generation = $this->aiService->generateImage(
-            $request->input('prompt'),
-            [
+        // 1. Create a record to track the AI generation task
+        $generation = AIGeneration::create([
+            'user_id' => auth()->id(),
+            'provider' => 'gemini', // Or your preferred provider
+            'model_name' => 'gemini-pro', // Or your specific image model
+            'prompt' => $validated['prompt'],
+            'parameters' => [
                 'style' => $request->input('style'),
-                'size' => $request->input('size', '512x512')
-            ]
-        );
+                'size' => $request->input('size', '1024x1024')
+            ],
+            'status' => 'pending' // The job is waiting in the queue
+        ]);
 
-        if ($generation->status === 'completed') {
-            return redirect()->route('gallery.show', $generation->image->uuid)
-                ->with('success', 'Image generated successfully!');
-        }
+        // 2. Dispatch the job to the queue for background processing
+        GenerateAiImage::dispatch($generation);
 
-        return redirect()->back()->with('error', 'Generation failed: ' . $generation->error_message);
+        // 3. Immediately redirect the user with a success message
+        return redirect()->route('ai.history')->with('success', 'Image generation started! It will appear here shortly.');
     }
 
     public function history()
